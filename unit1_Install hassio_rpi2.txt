@@ -1,0 +1,101 @@
+Unit 1: Install Raspberry OS Lite (with no Desktop env.)
+URLs: 
+- https://github.com/kvazis/training/blob/master/lessons/unit%201%20-%20raspberry%203b/unit_1_raspberry.txt
+- https://dummylabs.com/ru/post/2018-10-16-hassio-for-raspberrypi/
+- https://www.youtube.com/watch?v=NzJEdK8pOPQ&list=PL4y1yofoNjT737C4hXti0SD-V6pBjqOmO&index=1 
+
+1. Download Pi Imager: https://www.raspberrypi.org/software/
+2. Insert SD-card, select OS, choose SD-card, click on "Write" button
+3. Создаем в корне флешки пустой файл ssh (позволит подключаться по ssh)
+4. Подключаемся к RPi OS Lite (default:pi - raspberry)
+5. Cмена текущего пароля - passwd
+	hass.io server:
+	defautl_user rpi2: pi / password
+	user: user1 / password
+	Добавление пользователя - sudo adduser user1
+	Добавление в группу sudo - sudo usermod -aG sudo user1
+
+6. Обновления:
+	Прошивка - sudo rpi-update
+	Перезагрузка - sudo reboot
+	Обновление списка пакетов - sudo apt-get update
+	Обновление пакетов - sudo apt-get -y upgrade
+
+7. Настраиваем сеть и wi-fi-свисток:
+   7.1 Сеть
+    Открываем файл - sudo nano /etc/network/interfaces
+	Вставляем (правая клавиша мыши)
+	Адрес и шлюз меняем на нужные	
+
+	allow-hotplug wlan0
+	iface wlan0 inet manual
+	wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
+	iface default inet dhcp
+
+	auto lo
+	iface lo inet loopback
+
+	#iface eth0 inet manual
+
+	allow-hotplug eth0
+	iface eth0 inet static
+		address 192.168.1.59
+		netmask 255.255.255.0
+		gateway 192.168.1.1
+		
+		
+	7.1 Wi-fi: sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+	
+	ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+	update_config=1
+
+	network={
+			ssid="SSID Wifi"
+			psk="password"
+			key_mgmt=WPA-PSK
+	}
+	
+	
+	sudo iw dev wlan0 set power_save off
+	sudo dhclient wlan0
+	sudo ifdown wlan0
+    sudo ifup wlan0
+
+	
+Ctrl-X выход - подтверждаем изменения нажав на Y 
+Перезагрузка - sudo reboot
+
+8. Приложение для настройки - sudo raspi-config
+	8 Update - обновление приложение
+	5 Localisation Options / I1 Change Locale - ищем и выбираем пробелом ru_RU.UTF-8 UTF-8
+	5 Localisation Options / I2 Change Timezone - выбираем часовой пояс
+
+9. Установка пакетов нужных для работы и установки Hass.io
+
+sudo apt-get install -y bash curl git jq avahi-daemon dbus apparmor-utils network-manager libavahi-compat-libdnssd-dev libatlas3-base apt-transport-https ca-certificates socat software-properties-common ftpd mc 
+Перезагрузка - sudo reboot
+
+10. Установка docker: sudo curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
+11. Добавляем группу docker и добавляем в нее пользователя
+	sudo groupadd docker
+	sudo gpasswd -a $USER docker
+	newgrp docker
+	
+12. Ставим Portainer - 
+	docker pull portainer/portainer-ce:latest
+	docker volume create portainer_data
+	docker run -d -p 9000:9000 --name portainer-ce --restart always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce
+
+13. Веб интерфейс Portainer - IP adress:9000
+	portainer: admin / password
+
+14. Переходим в режим root - sudo su
+	Разрядность системы - getconf LONG_BIT
+
+	Установка hass.io (список ключей тут - https://github.com/home-assistant/supervised-installer)
+	curl -sL https://raw.githubusercontent.com/home-assistant/supervised-installer/master/installer.sh | bash -s -- -m raspberrypi2
+	
+
+15. Веб интерфейс Hass.io - IP adress:8123
+	home_ass: user / password
+
