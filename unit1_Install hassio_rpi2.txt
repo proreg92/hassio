@@ -3,6 +3,10 @@ URLs:
 - https://github.com/kvazis/training/blob/master/lessons/unit%201%20-%20raspberry%203b/unit_1_raspberry.txt
 - https://dummylabs.com/ru/post/2018-10-16-hassio-for-raspberrypi/
 - https://www.youtube.com/watch?v=NzJEdK8pOPQ&list=PL4y1yofoNjT737C4hXti0SD-V6pBjqOmO&index=1 
+- Why not connect SSH via Wifi: https://qastack.ru/raspberrypi/13890/cannot-ssh-to-raspberry-pi-via-wifi-only
+- How to disable private dynamic MAC: 
+	- https://community.home-assistant.io/t/the-mac-address-changes-on-every-reboot-on-raspbian-lite-after-installing-home-assistant/177559/37
+	- https://www.raspberrypi.org/forums/viewtopic.php?f=63&t=196348&start=25#p1524581
 
 1. Download Pi Imager: https://www.raspberrypi.org/software/
 2. Insert SD-card, select OS, choose SD-card, click on "Write" button
@@ -98,4 +102,6 @@ sudo apt-get install -y bash curl git jq avahi-daemon dbus apparmor-utils networ
 
 15. Веб интерфейс Hass.io - IP adress:8123
 	home_ass: user / password
+	
+16. Добавил конфигурацию под Wi-fi и DHCP (смотри конфиги NetworkManager.conf и interfaces_dhcp в files)
 
